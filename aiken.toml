@@ -1,0 +1,18 @@
+name = "perun-network/lightning-liquidity-manager"
+version = "0.0.0"
+compiler = "v1.1.19"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Aiken contracts for project 'perun-network/lightning-liquidity-manager'"
+
+[repository]
+user = "perun-network"
+project = "lightning-liquidity-manager"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[config]
