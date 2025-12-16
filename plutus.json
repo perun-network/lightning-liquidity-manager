@@ -1,0 +1,371 @@
+{
+  "preamble": {
+    "title": "perun-network/lightning-liquidity-manager",
+    "description": "Aiken contracts for project 'perun-network/lightning-liquidity-manager'",
+    "version": "0.0.0",
+    "plutusVersion": "v3",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.19+e525483"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "liquidity_manager.liquidity_manager.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/liquidity_manager~1types~1State"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/liquidity_manager~1types~1Action"
+        }
+      },
+      "parameters": [
+        {
+          "title": "config",
+          "schema": {
+            "$ref": "#/definitions/liquidity_manager~1types~1Config"
+          }
+        }
+      ],
+      "compiledCode": "590b99010100229800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e3300130093754007370e90004dc3a4009300837540089111199119912cc004c01c01626464b300130170028024590141bad3015001301137540191598009805002c4c8c966002602e0050048b2028375a602a00260226ea80322b300130060058991919194c004dd6980c000cdd6980c0024dd7180c001cdd6980c00124444b3001301d00580545901a0c060004c05c004c058004c044dd5006456600266e1d20060058992cc004c058006266008602a00200716404c60226ea80322b30013370e9004002c4c8c966002602e0050048b2028375a602a00260226ea80322c807900f201e403c8078566002600a601c6ea800a330013012300f37540052232330010010032259800800c5300103d87a80008992cc004cdc39bad30173014375400200913374a90001980b000a5eb8226600600660300048090c05800501448c04cc050c050c050006460266028003230133014301430143014001911919800800801912cc00400629422b30013371e6eb8c05800400e2946266004004602e002808901448c04cc050c050c050c050c050c050c050c05000644b3001300730103754005132323298009bad3017001980c000cdd6980b801cdd6980b80124444b3001301c003899198008009bac301c004223259800801402e26601a603c00426002603e00480e0c00800a2c80c8602e002602c00260226ea800a2c807a44646600200200644b30010018a5eb8226644b3001300500289980b80119802002000c4cc010010005013180b000980b800a02891809980a180a000cc038dd50054dc4240009111111111114c00488c8c8c966002603200313259800980d18101baa300f30213754604860426ea8012266e20018006266e2401800501f1bad302330203754005159800980b000c5284528a03c4078603c6ea8004c084c078dd51810980f1baa00130203021302130213021302130213021301d375400322330060022980099b87375a6042603c6ea800400a94294501c48a60026eb8c02cc074dd5000cdd71802980e9baa0018a4000911199119800800801191919800800803912cc00400600713233225980099b910090028acc004cdc78048014400600c812226600a00a60540088120dd718118009bab302400130260014090297adef6c602259800800c00e2646644b30013372200e00515980099b8f0070028800c01902344cc014014c0a40110231bae3022001375a6046002604a00281189112cc004c050016264b300130050018acc004cc02cdd61805180f9baa017375c6044603e6ea8096264b30013024001899912cc004c09800626464b30013019302337540031323300f00115980099b87375a6050604a6ea8004cdc01bad30283025375402c00f15980099b87375a6026604a6ea8004dd6980998129baa0168acc004cdc39bad300d302537540026eb4c034c094dd500b456600266e1ccc020dd5980998129baa00302b33700660106eacc04cc094dd5180998129baa00502b0078a518b20468b20468b20468b2046302730243754003164088601660466ea8004c0940062c8118c08c004cc024dd6180418101baa01823375e604860426ea8004c040c084dd5013c59021198041bac3022301f375402e466ebcc08cc080dd5180718101baa001300f3020375404d1640751640746eb4c084c078dd500cc4c966002603000d132598009803000c566002660186eb0c02cc080dd500c1bae30233020375404d15980099b890013002375a601c60406ea8046264b30013025001899912cc004c09c00626464b3001301a302437540031323301000115980099b87375a6052604c6ea8004c02001e2b30013370e6eb4c050c098dd50009bad30143026375402f15980099b87375a601c604c6ea8004dd6980718131baa0178acc004cdc3998049bab30143026375400605866e04cc024dd5980a18131baa30143026375400a05800f14a31640911640911640911640906050604a6ea80062c8118c030c090dd50009813000c590241812000998051bac300930213754032466ebcc094c088dd5000980898111baa0288b2044330093758604660406ea80608cdd7981218109baa300f30213754002602060426ea809e2c80f22c80f22c80f0dd69811180f9baa01a8acc004c05001a26464653001375a604a003375a604a604c003375a604a007375c604a00491112cc004c03000a2b3001300c0048acc004cdc4002001c56600330013300b00301ea50a514091159800998091bac30113026375403c6eb8c0a4c098dd5016456600266e24008c020dd6980a18131baa0178992cc004c0ac006264b3001301d30273754003132330130011325980099b87375a605a60546ea8008dd6981698151baa01b8acc004cdc39bad3018302a375400466e00dd6980c18151baa01b0068acc004cdc39bad3012302a375400400315980099baf3019302a37540046e9ccc0b0cdd2a4000660586ea0004cc0b0dd4003198161ba90053302c3750010660586ea001d2f5c06eb0c064c0a8dd500dc528c5902845902845902845902819b80375a602260526ea80692002302b30283754003164098601e604e6ea8c0a80062c8140cc03cdd6180718131baa01e23375e6054604e6ea8004c058c09cdd5016c590244590244590244590244590244590240c094004c090004c07cdd500d456600266e1d2006006899192cc004c01c0062b3001337120026eb4c024c084dd50094566002600e6eb4c03cc084dd500144c966002603060426ea8006264b30013375e002009159800cc004cc020dd6980818119baa00101ba50a514085159800998079bac300e302337540366eb8c098c08cdd5014c4c966002605000313322598009815000c4c8c966002603a604e6ea800626466026002264b3001337129000000c56600266e1cdd6981698151baa002375a605a60546ea806e2b30013370e6eb4c060c0a8dd5001000c56600266e1cdd6980918151baa002375a602460546ea806e2b30013375e603260546ea8008dd3998071bac3019302a37540366eb4c0b4c0a8dd5005c56600266e1ccc034dd5980c18151baa004030337026601a6eacc060c0a8dd5180c18151baa006030375a603060546ea802e29462c81422c81422c81422c81422c81422c8140cdc09bad3017302937540346eb4c05cc0a4dd5005181598141baa0018b204c300f30273754002605200316409c604e0026601a6eb0c030c090dd500e119baf3028302537540026028604a6ea80ae2c8128cc030dd6181318119baa01b23375e604e60486ea8c048c090dd5000980998121baa02a8b20428b20428b2042302530223754003164080660226eb0c040c084dd50091bad30243021375400516407d16407d16407c6eb4c08cc080dd50009811180f9baa01a8992cc004c0180062b3001337120026eb4c020c080dd5008c566002660186eb0c02cc080dd500c1bae30233020375404d13259800980b98101baa0018992cc004cc01cdd6980798111baa00101a8992cc004c09c006264b30013019302337540031323300f0011325980099b89480000062b30013370e6eb4c0a4c098dd50011bad30293026375402f15980099b87375a6028604c6ea80080062b30013370e6eb4c038c098dd50011bad300e3026375402f15980099baf3015302637540046e9ccc028dd6180a98131baa0170078a518b20488b20488b20488b20488b2048337026eb4c04cc094dd500b1bad301330253754008604e60486ea80062c8110c02cc08cdd51813000c59024198059bac300a30223754034466ebcc098c08cdd5000980918119baa0298b204030243021375400316407c660206eb0c03cc080dd5008800c5901e45901e45901e1bad3022301f375403480e901d203a37026eb4c084c078dd5007a03822c8068c048018c040c0440108966002600a601c6ea800a264646464653001375a602e003375a602e00b375a602e009375c602e007375a602e004911112cc004c07401a0171640683017001301600130150013014001300f37540051640348b200e180400098019baa0088a4d1365640041",
+      "hash": "0da3f12fbc641b7dcf708e30cda75b0d4796a76fb4157d578096712d"
+    },
+    {
+      "title": "liquidity_manager.liquidity_manager.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "parameters": [
+        {
+          "title": "config",
+          "schema": {
+            "$ref": "#/definitions/liquidity_manager~1types~1Config"
+          }
+        }
+      ],
+      "compiledCode": "590b99010100229800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e3300130093754007370e90004dc3a4009300837540089111199119912cc004c01c01626464b300130170028024590141bad3015001301137540191598009805002c4c8c966002602e0050048b2028375a602a00260226ea80322b300130060058991919194c004dd6980c000cdd6980c0024dd7180c001cdd6980c00124444b3001301d00580545901a0c060004c05c004c058004c044dd5006456600266e1d20060058992cc004c058006266008602a00200716404c60226ea80322b30013370e9004002c4c8c966002602e0050048b2028375a602a00260226ea80322c807900f201e403c8078566002600a601c6ea800a330013012300f37540052232330010010032259800800c5300103d87a80008992cc004cdc39bad30173014375400200913374a90001980b000a5eb8226600600660300048090c05800501448c04cc050c050c050006460266028003230133014301430143014001911919800800801912cc00400629422b30013371e6eb8c05800400e2946266004004602e002808901448c04cc050c050c050c050c050c050c050c05000644b3001300730103754005132323298009bad3017001980c000cdd6980b801cdd6980b80124444b3001301c003899198008009bac301c004223259800801402e26601a603c00426002603e00480e0c00800a2c80c8602e002602c00260226ea800a2c807a44646600200200644b30010018a5eb8226644b3001300500289980b80119802002000c4cc010010005013180b000980b800a02891809980a180a000cc038dd50054dc4240009111111111114c00488c8c8c966002603200313259800980d18101baa300f30213754604860426ea8012266e20018006266e2401800501f1bad302330203754005159800980b000c5284528a03c4078603c6ea8004c084c078dd51810980f1baa00130203021302130213021302130213021301d375400322330060022980099b87375a6042603c6ea800400a94294501c48a60026eb8c02cc074dd5000cdd71802980e9baa0018a4000911199119800800801191919800800803912cc00400600713233225980099b910090028acc004cdc78048014400600c812226600a00a60540088120dd718118009bab302400130260014090297adef6c602259800800c00e2646644b30013372200e00515980099b8f0070028800c01902344cc014014c0a40110231bae3022001375a6046002604a00281189112cc004c050016264b300130050018acc004cc02cdd61805180f9baa017375c6044603e6ea8096264b30013024001899912cc004c09800626464b30013019302337540031323300f00115980099b87375a6050604a6ea8004cdc01bad30283025375402c00f15980099b87375a6026604a6ea8004dd6980998129baa0168acc004cdc39bad300d302537540026eb4c034c094dd500b456600266e1ccc020dd5980998129baa00302b33700660106eacc04cc094dd5180998129baa00502b0078a518b20468b20468b20468b2046302730243754003164088601660466ea8004c0940062c8118c08c004cc024dd6180418101baa01823375e604860426ea8004c040c084dd5013c59021198041bac3022301f375402e466ebcc08cc080dd5180718101baa001300f3020375404d1640751640746eb4c084c078dd500cc4c966002603000d132598009803000c566002660186eb0c02cc080dd500c1bae30233020375404d15980099b890013002375a601c60406ea8046264b30013025001899912cc004c09c00626464b3001301a302437540031323301000115980099b87375a6052604c6ea8004c02001e2b30013370e6eb4c050c098dd50009bad30143026375402f15980099b87375a601c604c6ea8004dd6980718131baa0178acc004cdc3998049bab30143026375400605866e04cc024dd5980a18131baa30143026375400a05800f14a31640911640911640911640906050604a6ea80062c8118c030c090dd50009813000c590241812000998051bac300930213754032466ebcc094c088dd5000980898111baa0288b2044330093758604660406ea80608cdd7981218109baa300f30213754002602060426ea809e2c80f22c80f22c80f0dd69811180f9baa01a8acc004c05001a26464653001375a604a003375a604a604c003375a604a007375c604a00491112cc004c03000a2b3001300c0048acc004cdc4002001c56600330013300b00301ea50a514091159800998091bac30113026375403c6eb8c0a4c098dd5016456600266e24008c020dd6980a18131baa0178992cc004c0ac006264b3001301d30273754003132330130011325980099b87375a605a60546ea8008dd6981698151baa01b8acc004cdc39bad3018302a375400466e00dd6980c18151baa01b0068acc004cdc39bad3012302a375400400315980099baf3019302a37540046e9ccc0b0cdd2a4000660586ea0004cc0b0dd4003198161ba90053302c3750010660586ea001d2f5c06eb0c064c0a8dd500dc528c5902845902845902845902819b80375a602260526ea80692002302b30283754003164098601e604e6ea8c0a80062c8140cc03cdd6180718131baa01e23375e6054604e6ea8004c058c09cdd5016c590244590244590244590244590244590240c094004c090004c07cdd500d456600266e1d2006006899192cc004c01c0062b3001337120026eb4c024c084dd50094566002600e6eb4c03cc084dd500144c966002603060426ea8006264b30013375e002009159800cc004cc020dd6980818119baa00101ba50a514085159800998079bac300e302337540366eb8c098c08cdd5014c4c966002605000313322598009815000c4c8c966002603a604e6ea800626466026002264b3001337129000000c56600266e1cdd6981698151baa002375a605a60546ea806e2b30013370e6eb4c060c0a8dd5001000c56600266e1cdd6980918151baa002375a602460546ea806e2b30013375e603260546ea8008dd3998071bac3019302a37540366eb4c0b4c0a8dd5005c56600266e1ccc034dd5980c18151baa004030337026601a6eacc060c0a8dd5180c18151baa006030375a603060546ea802e29462c81422c81422c81422c81422c81422c8140cdc09bad3017302937540346eb4c05cc0a4dd5005181598141baa0018b204c300f30273754002605200316409c604e0026601a6eb0c030c090dd500e119baf3028302537540026028604a6ea80ae2c8128cc030dd6181318119baa01b23375e604e60486ea8c048c090dd5000980998121baa02a8b20428b20428b2042302530223754003164080660226eb0c040c084dd50091bad30243021375400516407d16407d16407c6eb4c08cc080dd50009811180f9baa01a8992cc004c0180062b3001337120026eb4c020c080dd5008c566002660186eb0c02cc080dd500c1bae30233020375404d13259800980b98101baa0018992cc004cc01cdd6980798111baa00101a8992cc004c09c006264b30013019302337540031323300f0011325980099b89480000062b30013370e6eb4c0a4c098dd50011bad30293026375402f15980099b87375a6028604c6ea80080062b30013370e6eb4c038c098dd50011bad300e3026375402f15980099baf3015302637540046e9ccc028dd6180a98131baa0170078a518b20488b20488b20488b20488b2048337026eb4c04cc094dd500b1bad301330253754008604e60486ea80062c8110c02cc08cdd51813000c59024198059bac300a30223754034466ebcc098c08cdd5000980918119baa0298b204030243021375400316407c660206eb0c03cc080dd5008800c5901e45901e45901e1bad3022301f375403480e901d203a37026eb4c084c078dd5007a03822c8068c048018c040c0440108966002600a601c6ea800a264646464653001375a602e003375a602e00b375a602e009375c602e007375a602e004911112cc004c07401a0171640683017001301600130150013014001300f37540051640348b200e180400098019baa0088a4d1365640041",
+      "hash": "0da3f12fbc641b7dcf708e30cda75b0d4796a76fb4157d578096712d"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "List$liquidity_manager/types/Invoice": {
+      "dataType": "list",
+      "items": {
+        "$ref": "#/definitions/liquidity_manager~1types~1Invoice"
+      }
+    },
+    "Option$cardano/address/StakeCredential": {
+      "title": "Option",
+      "anyOf": [
+        {
+          "title": "Some",
+          "description": "An optional value.",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "$ref": "#/definitions/cardano~1address~1StakeCredential"
+            }
+          ]
+        },
+        {
+          "title": "None",
+          "description": "Nothing.",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
+    "aiken/crypto/ScriptHash": {
+      "title": "ScriptHash",
+      "dataType": "bytes"
+    },
+    "aiken/crypto/VerificationKeyHash": {
+      "title": "VerificationKeyHash",
+      "dataType": "bytes"
+    },
+    "cardano/address/Address": {
+      "title": "Address",
+      "description": "A Cardano `Address` typically holding one or two credential references.\n\n Note that legacy bootstrap addresses (a.k.a. 'Byron addresses') are\n completely excluded from Plutus contexts. Thus, from an on-chain\n perspective only exists addresses of type 00, 01, ..., 07 as detailed\n in [CIP-0019 :: Shelley Addresses](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019/#shelley-addresses).",
+      "anyOf": [
+        {
+          "title": "Address",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "payment_credential",
+              "$ref": "#/definitions/cardano~1address~1PaymentCredential"
+            },
+            {
+              "title": "stake_credential",
+              "$ref": "#/definitions/Option$cardano~1address~1StakeCredential"
+            }
+          ]
+        }
+      ]
+    },
+    "cardano/address/Credential": {
+      "title": "Credential",
+      "description": "A general structure for representing an on-chain `Credential`.\n\n Credentials are always one of two kinds: a direct public/private key\n pair, or a script (native or Plutus).",
+      "anyOf": [
+        {
+          "title": "VerificationKey",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            }
+          ]
+        },
+        {
+          "title": "Script",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "$ref": "#/definitions/aiken~1crypto~1ScriptHash"
+            }
+          ]
+        }
+      ]
+    },
+    "cardano/address/PaymentCredential": {
+      "title": "PaymentCredential",
+      "description": "A general structure for representing an on-chain `Credential`.\n\n Credentials are always one of two kinds: a direct public/private key\n pair, or a script (native or Plutus).",
+      "anyOf": [
+        {
+          "title": "VerificationKey",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            }
+          ]
+        },
+        {
+          "title": "Script",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "$ref": "#/definitions/aiken~1crypto~1ScriptHash"
+            }
+          ]
+        }
+      ]
+    },
+    "cardano/address/StakeCredential": {
+      "title": "StakeCredential",
+      "description": "Represent a type of object that can be represented either inline (by hash)\n or via a reference (i.e. a pointer to an on-chain location).\n\n This is mainly use for capturing pointers to a stake credential\n registration certificate in the case of so-called pointer addresses.",
+      "anyOf": [
+        {
+          "title": "Inline",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "$ref": "#/definitions/cardano~1address~1Credential"
+            }
+          ]
+        },
+        {
+          "title": "Pointer",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "title": "slot_number",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "transaction_index",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "certificate_index",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "liquidity_manager/types/Action": {
+      "title": "Action",
+      "description": "Redeemer actions for the Liquidity Manager contract",
+      "anyOf": [
+        {
+          "title": "Deposit",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "amount",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "Withdraw",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "title": "amount",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "CreateInvoice",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": [
+            {
+              "title": "amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "owner",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "timestamp",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "expires_at",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "FulfillInvoice",
+          "dataType": "constructor",
+          "index": 3,
+          "fields": [
+            {
+              "title": "invoice",
+              "$ref": "#/definitions/liquidity_manager~1types~1Invoice"
+            }
+          ]
+        },
+        {
+          "title": "CancelInvoice",
+          "dataType": "constructor",
+          "index": 4,
+          "fields": [
+            {
+              "title": "invoice_id",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "liquidity_manager/types/Config": {
+      "title": "Config",
+      "anyOf": [
+        {
+          "title": "Config",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "lm_pkh",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "cbtc_policy",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "cbtc_name",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "script_address",
+              "$ref": "#/definitions/cardano~1address~1Address"
+            }
+          ]
+        }
+      ]
+    },
+    "liquidity_manager/types/Invoice": {
+      "title": "Invoice",
+      "description": "Invoice/Payload structure for Lightning → Cardano coordination",
+      "anyOf": [
+        {
+          "title": "Invoice",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "invoice_id",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "owner",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "timestamp",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "expires_at",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "liquidity_manager/types/State": {
+      "title": "State",
+      "anyOf": [
+        {
+          "title": "State",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "total_liquidity",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "reserved",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "last_invoice_id",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "invoices",
+              "$ref": "#/definitions/List$liquidity_manager~1types~1Invoice"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
