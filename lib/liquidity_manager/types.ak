@@ -3,10 +3,10 @@ use cardano/address.{ Address }
 
 
 pub type Config {
-  lm_pkh: VerificationKeyHash,
-  cbtc_policy: ByteArray,
-  cbtc_name: ByteArray,
-  script_address: Address,
+  lm_pkh: VerificationKeyHash, // Liquidity Manager operator's PKH
+  cbtc_policy: ByteArray,  // cBTC asset policy ID
+  cbtc_name: ByteArray, // cBTC asset name
+  script_address: Address,  // Liquidity Manager script address
 }
 
 
