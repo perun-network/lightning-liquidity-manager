@@ -44,12 +44,7 @@ pub fn mock_operator_address() -> Address {
 }
 
 pub fn test_config() -> Config {
-  Config {
-    lm_pkh,
-    cbtc_policy,
-    cbtc_name,
-    script_address: mock_script_address(),
-  }
+  Config { lm_pkh, cbtc_policy, cbtc_name }
 }
 
 pub fn mock_tx_id() -> TransactionId {
@@ -72,7 +67,7 @@ pub fn make_value(lovelace: Int, cbtc_amount: Int) -> assets.Value {
 
 pub fn make_state_output(state: State, cbtc_amount: Int) -> Output {
   Output {
-    address: test_config().script_address,
+    address: mock_script_address(),
     value: make_value(2_000_000, cbtc_amount),
     datum: InlineDatum(state),
     reference_script: None,

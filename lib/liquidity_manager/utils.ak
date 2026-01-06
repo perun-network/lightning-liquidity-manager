@@ -3,11 +3,23 @@ use aiken/crypto.{VerificationKeyHash}
 use aiken/interval
 use cardano/address.{Address, Credential}
 use cardano/assets.{Value, quantity_of}
-use cardano/transaction.{Input, Output, Transaction}
-use liquidity_manager/types.{Config, Invoice}
+use cardano/transaction.{Datum, InlineDatum, Input, Output, Transaction}
+use liquidity_manager/types.{Config, Invoice, State}
 
 pub fn cbtc_of(value: Value, config: Config) -> Int {
   quantity_of(value, config.cbtc_policy, config.cbtc_name)
+}
+
+/// Check if a datum is a State datum (identifies script UTxOs)
+pub fn has_state_datum(datum: Datum) -> Bool {
+  when datum is {
+    InlineDatum(data) -> {
+      // Try to deserialize as State - if it works, it's a state UTXO
+      expect _state: State = data
+      True
+    }
+    _ -> False
+  }
 }
 
 pub fn find_invoice(invoices: List<Invoice>, id: Int) -> Option<Invoice> {
@@ -59,14 +71,10 @@ pub fn verify_owner_output(
   }
 }
 
-/// Calculate total cBTC in operator's inputs (excluding script inputs)
-pub fn operator_input_cbtc(
-  inputs: List<Input>,
-  script_address: Address,
-  config: Config,
-) -> Int {
+/// Calculate total cBTC in operator's inputs (excluding state inputs)
+pub fn operator_input_cbtc(inputs: List<Input>, config: Config) -> Int {
   let operator_inputs =
-    list.filter(inputs, fn(input) { input.output.address != script_address })
+    list.filter(inputs, fn(input) { !has_state_datum(input.output.datum) })
 
   list.foldr(
     operator_inputs,
@@ -75,14 +83,10 @@ pub fn operator_input_cbtc(
   )
 }
 
-/// Calculate total cBTC in operator's outputs (excluding script outputs)
-pub fn operator_output_cbtc(
-  outputs: List<Output>,
-  script_address: Address,
-  config: Config,
-) -> Int {
+/// Calculate total cBTC in operator's outputs (excluding state outputs)
+pub fn operator_output_cbtc(outputs: List<Output>, config: Config) -> Int {
   let operator_outputs =
-    list.filter(outputs, fn(output) { output.address != script_address })
+    list.filter(outputs, fn(output) { !has_state_datum(output.datum) })
 
   list.foldr(
     operator_outputs,

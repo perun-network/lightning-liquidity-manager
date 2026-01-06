@@ -3,8 +3,9 @@ use aiken/crypto.{VerificationKeyHash}
 use cardano/transaction.{InlineDatum, Output, Transaction}
 use liquidity_manager/types.{Config, Invoice, State}
 use liquidity_manager/utils.{
-  cbtc_of, find_invoice, operator_input_cbtc, operator_output_cbtc,
-  remove_invoice, submitted_after_expiry, verify_owner_output,
+  cbtc_of, find_invoice, has_state_datum, operator_input_cbtc,
+  operator_output_cbtc, remove_invoice, submitted_after_expiry,
+  verify_owner_output,
 }
 
 /// Validate deposit action
@@ -27,20 +28,14 @@ pub fn validate_deposit(
   // Verify operator signature (only LM can deposit)
   expect list.has(tx.extra_signatories, config.lm_pkh)
 
-  // Find unique state input from this script
+  // Find unique state input - it has a State datum
   let state_inputs =
-    list.filter(
-      tx.inputs,
-      fn(input) { input.output.address == config.script_address },
-    )
+    list.filter(tx.inputs, fn(input) { has_state_datum(input.output.datum) })
   expect [state_input] = state_inputs
 
-  // Find the unique state output back to this script
+  // Find the unique state output - it also has a State datum
   let state_outputs =
-    list.filter(
-      tx.outputs,
-      fn(output: Output) { output.address == config.script_address },
-    )
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
 
   // Must be exactly one state output
   expect [state_output] = state_outputs
@@ -62,10 +57,8 @@ pub fn validate_deposit(
   expect output_cbtc == input_cbtc + amount
 
   // Calculate operator's cBTC change: (operator_outputs - operator_inputs)
-  let operator_in_cbtc =
-    operator_input_cbtc(tx.inputs, config.script_address, config)
-  let operator_out_cbtc =
-    operator_output_cbtc(tx.outputs, config.script_address, config)
+  let operator_in_cbtc = operator_input_cbtc(tx.inputs, config)
+  let operator_out_cbtc = operator_output_cbtc(tx.outputs, config)
   // Operator should have spent at least 'amount' cBTC more than they received back
   // operator_in_cbtc - operator_out_cbtc >= amount
   expect operator_in_cbtc >= operator_out_cbtc + amount
@@ -95,20 +88,14 @@ pub fn validate_withdraw(
   let available_liquidity = datum.total_liquidity - datum.reserved
   expect available_liquidity >= amount
 
-  // Find unique state input from this script
+  // Find unique state input - it has a State datum
   let state_inputs =
-    list.filter(
-      tx.inputs,
-      fn(input) { input.output.address == config.script_address },
-    )
+    list.filter(tx.inputs, fn(input) { has_state_datum(input.output.datum) })
   expect [state_input] = state_inputs
 
   // Find the unique state output back to this script
   let state_outputs =
-    list.filter(
-      tx.outputs,
-      fn(output: Output) { output.address == config.script_address },
-    )
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
 
   expect [state_output] = state_outputs
 
@@ -129,10 +116,8 @@ pub fn validate_withdraw(
 
   // Operator should receive at least 'amount' more cBTC than they spent
   // operator_out_cbtc - operator_in_cbtc >= amount
-  let operator_in_cbtc =
-    operator_input_cbtc(tx.inputs, config.script_address, config)
-  let operator_out_cbtc =
-    operator_output_cbtc(tx.outputs, config.script_address, config)
+  let operator_in_cbtc = operator_input_cbtc(tx.inputs, config)
+  let operator_out_cbtc = operator_output_cbtc(tx.outputs, config)
   expect operator_out_cbtc >= operator_in_cbtc + amount
 
   True
@@ -169,18 +154,12 @@ pub fn validate_create_invoice(
   expect available_liquidity >= amount
 
   let state_inputs =
-    list.filter(
-      tx.inputs,
-      fn(input) { input.output.address == config.script_address },
-    )
+    list.filter(tx.inputs, fn(input) { has_state_datum(input.output.datum) })
   expect [_state_input] = state_inputs
 
   // Find unique state output back to this script
   let state_outputs =
-    list.filter(
-      tx.outputs,
-      fn(output: Output) { output.address == config.script_address },
-    )
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
   expect [state_output] = state_outputs
 
   // Extract new datum
@@ -233,18 +212,12 @@ pub fn validate_fulfill_invoice(
 
   // Find unique state input from this script
   let state_inputs =
-    list.filter(
-      tx.inputs,
-      fn(input) { input.output.address == config.script_address },
-    )
+    list.filter(tx.inputs, fn(input) { has_state_datum(input.output.datum) })
   expect [state_input] = state_inputs
 
   // Find unique state output back to this script
   let state_outputs =
-    list.filter(
-      tx.outputs,
-      fn(output: Output) { output.address == config.script_address },
-    )
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
   expect [state_output] = state_outputs
 
   // Extract new datum
@@ -301,10 +274,7 @@ pub fn validate_cancel_invoice(
 
   // Find unique state output back to this script
   let state_outputs =
-    list.filter(
-      tx.outputs,
-      fn(output: Output) { output.address == config.script_address },
-    )
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
   expect [state_output] = state_outputs
 
   // Extract new datum
