@@ -4,3 +4,11 @@ artifacts/
 build/
 # Aiken's default documentation export
 docs/
+
+
+env/
+uv.lock
+credentials/
+scripts/__pycache__/
+plutus-applied.json
+
