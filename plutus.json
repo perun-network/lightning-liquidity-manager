@@ -2,7 +2,7 @@
   "preamble": {
     "title": "perun-network/lightning-liquidity-manager",
     "description": "Aiken contracts for project 'perun-network/lightning-liquidity-manager'",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "plutusVersion": "v3",
     "compiler": {
       "name": "Aiken",
