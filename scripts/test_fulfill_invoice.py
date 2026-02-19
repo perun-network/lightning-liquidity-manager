@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
     Network,
     PaymentSigningKey,
     PaymentVerificationKey,
@@ -154,10 +153,7 @@ def test_fulfill_invoice(contract_tx_id: str, invoice_id: int):
         print(f"  Contract TX:     {contract_tx_id[:32]}...")
 
         # Connect to chain
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
+        context = Config.get_chain_context()
 
         # Load keys and validator
         signing_key = PaymentSigningKey.load(sk_file)

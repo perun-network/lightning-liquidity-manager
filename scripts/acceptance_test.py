@@ -14,7 +14,6 @@ from pathlib import Path
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
 )
 
 from config import Config
@@ -114,10 +113,7 @@ def run_acceptance_test(starting_tx_id: str):
     print(f"Starting TX:    {starting_tx_id}\n")
 
     # Connect to chain
-    context = BlockFrostChainContext(
-        project_id=Config.get_blockfrost_api_key(),
-        base_url="https://cardano-preview.blockfrost.io/api/",
-    )
+    context = Config.get_chain_context()
 
     # Track all transactions
     results = {

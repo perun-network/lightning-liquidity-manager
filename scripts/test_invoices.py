@@ -23,7 +23,6 @@ from pathlib import Path
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
     Network,
     PaymentSigningKey,
     PaymentVerificationKey,
@@ -157,10 +156,7 @@ def test_invoice_operations(starting_contract_tx: str, test_amount: int = 200000
         print(f"  Test Amount:     {test_amount:,} cBTC")
 
         # Connect to chain
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
+        context = Config.get_chain_context()
 
         current_tx = starting_contract_tx
 
