@@ -1,10 +1,10 @@
 use aiken/collection/list
 use aiken/crypto.{VerificationKeyHash}
 use cardano/transaction.{InlineDatum, Output, Transaction}
-use liquidity_manager/types.{Config, Invoice, State}
+use liquidity_manager/types.{Config, Invoice, Offramp, State}
 use liquidity_manager/utils.{
-  cbtc_of, find_invoice, has_state_datum, operator_input_cbtc,
-  operator_output_cbtc, remove_invoice, submitted_after_expiry,
+  cbtc_of, find_invoice, find_offramp, has_state_datum, operator_input_cbtc,
+  operator_output_cbtc, remove_invoice, remove_offramp, submitted_after_expiry,
   verify_owner_output,
 }
 
@@ -292,6 +292,156 @@ pub fn validate_cancel_invoice(
   // Remove cancelled invoice from state
   let updated_invoices = remove_invoice(datum.invoices, invoice_id)
   expect new_datum.invoices == updated_invoices
+
+  True
+}
+
+/// Validate offramp creation (register intent on-chain, no cBTC movement)
+pub fn validate_create_offramp(
+  config: Config,
+  datum: State,
+  amount: Int,
+  payment_hash: ByteArray,
+  refund_address: VerificationKeyHash,
+  expires_at: Int,
+  self: Transaction,
+) -> Bool {
+  let tx = self
+
+  expect amount > 0
+  expect !submitted_after_expiry(expires_at, tx)
+
+  // Only authorized operator can create offramps
+  expect list.has(tx.extra_signatories, config.lm_pkh)
+
+  let state_inputs =
+    list.filter(tx.inputs, fn(input) { has_state_datum(input.output.datum) })
+  expect [_state_input] = state_inputs
+
+  // Find unique state output
+  let state_outputs =
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
+  expect [state_output] = state_outputs
+
+  // Extract new datum
+  expect InlineDatum(new_datum_raw) = state_output.datum
+  expect new_datum: State = new_datum_raw
+
+  let new_id = datum.last_offramp_id + 1
+  let new_offramp =
+    Offramp { offramp_id: new_id, amount, payment_hash, refund_address, expires_at }
+  let expected_offramps = [new_offramp, ..datum.offramps]
+
+  // Verify state transition: only offramp fields change
+  expect new_datum.total_liquidity == datum.total_liquidity
+  expect new_datum.reserved == datum.reserved
+  expect new_datum.last_invoice_id == datum.last_invoice_id
+  expect new_datum.invoices == datum.invoices
+  expect new_datum.last_offramp_id == new_id
+  expect new_datum.offramps == expected_offramps
+
+  True
+}
+
+/// Validate offramp fulfillment (deposit cBTC to pool after Lightning payment)
+pub fn validate_fulfill_offramp(
+  config: Config,
+  datum: State,
+  offramp: Offramp,
+  self: Transaction,
+) -> Bool {
+  let tx = self
+
+  let offramp_id = offramp.offramp_id
+  expect offramp_id > 0
+  expect offramp_id <= datum.last_offramp_id
+
+  expect offramp.amount > 0
+
+  // Check on-chain offramps
+  expect Some(on_chain_offramp) = find_offramp(datum.offramps, offramp.offramp_id)
+  expect on_chain_offramp == offramp
+
+  expect !submitted_after_expiry(on_chain_offramp.expires_at, tx)
+
+  // Verify operator signature
+  expect list.has(tx.extra_signatories, config.lm_pkh)
+
+  // Find unique state input
+  let state_inputs =
+    list.filter(tx.inputs, fn(input) { has_state_datum(input.output.datum) })
+  expect [state_input] = state_inputs
+
+  // Find unique state output
+  let state_outputs =
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
+  expect [state_output] = state_outputs
+
+  // Extract new datum
+  expect InlineDatum(new_datum_raw) = state_output.datum
+  expect new_datum: State = new_datum_raw
+
+  // Verify state transition: total_liquidity increases, offramp removed
+  let expected_new_liquidity = datum.total_liquidity + offramp.amount
+  expect new_datum.total_liquidity == expected_new_liquidity
+  expect new_datum.reserved == datum.reserved
+  expect new_datum.last_invoice_id == datum.last_invoice_id
+  expect new_datum.invoices == datum.invoices
+  expect new_datum.last_offramp_id == datum.last_offramp_id
+
+  let updated_offramps = remove_offramp(datum.offramps, offramp.offramp_id)
+  expect new_datum.offramps == updated_offramps
+
+  // Verify cBTC added to the pool
+  let input_cbtc = cbtc_of(state_input.output.value, config)
+  let output_cbtc = cbtc_of(state_output.value, config)
+  expect output_cbtc == input_cbtc + offramp.amount
+
+  // Operator should have spent at least 'amount' cBTC more than they received back
+  let operator_in_cbtc = operator_input_cbtc(tx.inputs, config)
+  let operator_out_cbtc = operator_output_cbtc(tx.outputs, config)
+  expect operator_in_cbtc >= operator_out_cbtc + offramp.amount
+
+  True
+}
+
+/// Validate offramp cancellation (remove expired offramp entry)
+pub fn validate_cancel_offramp(
+  config: Config,
+  datum: State,
+  offramp_id: Int,
+  self: Transaction,
+) -> Bool {
+  let tx = self
+
+  expect offramp_id > 0
+  expect offramp_id <= datum.last_offramp_id
+
+  // Only authorized operator can cancel offramps
+  expect list.has(tx.extra_signatories, config.lm_pkh)
+
+  // Check on-chain offramps and verify expired
+  expect Some(on_chain_offramp) = find_offramp(datum.offramps, offramp_id)
+  expect submitted_after_expiry(on_chain_offramp.expires_at, tx)
+
+  // Find unique state output
+  let state_outputs =
+    list.filter(tx.outputs, fn(output) { has_state_datum(output.datum) })
+  expect [state_output] = state_outputs
+
+  // Extract new datum
+  expect InlineDatum(new_datum_raw) = state_output.datum
+  expect new_datum: State = new_datum_raw
+
+  // Verify state transition: only offramp removed, everything else unchanged
+  expect new_datum.total_liquidity == datum.total_liquidity
+  expect new_datum.reserved == datum.reserved
+  expect new_datum.last_invoice_id == datum.last_invoice_id
+  expect new_datum.invoices == datum.invoices
+  expect new_datum.last_offramp_id == datum.last_offramp_id
+
+  let updated_offramps = remove_offramp(datum.offramps, offramp_id)
+  expect new_datum.offramps == updated_offramps
 
   True
 }

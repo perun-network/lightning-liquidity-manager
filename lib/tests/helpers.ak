@@ -7,7 +7,7 @@ use cardano/transaction.{
   InlineDatum, Input, NoDatum, Output, OutputReference, Transaction,
   TransactionId,
 }
-use liquidity_manager/types.{Config, Invoice, State}
+use liquidity_manager/types.{Config, Invoice, Offramp, State}
 
 pub const lm_pkh: VerificationKeyHash =
   #"aabbccdd00112233445566778899aabbccddeeff00112233445566778899aabb"
@@ -150,11 +150,25 @@ pub fn late_validity_range(expiry: Int) -> Interval {
 }
 
 pub fn empty_state() -> State {
-  State { total_liquidity: 0, reserved: 0, last_invoice_id: 0, invoices: [] }
+  State {
+    total_liquidity: 0,
+    reserved: 0,
+    last_invoice_id: 0,
+    invoices: [],
+    last_offramp_id: 0,
+    offramps: [],
+  }
 }
 
 pub fn state_with_liquidity(total: Int, reserved: Int) -> State {
-  State { total_liquidity: total, reserved, last_invoice_id: 0, invoices: [] }
+  State {
+    total_liquidity: total,
+    reserved,
+    last_invoice_id: 0,
+    invoices: [],
+    last_offramp_id: 0,
+    offramps: [],
+  }
 }
 
 pub fn state_with_invoices(
@@ -163,7 +177,42 @@ pub fn state_with_invoices(
   last_invoice_id: Int,
   invoices: List<Invoice>,
 ) -> State {
-  State { total_liquidity: total, reserved, last_invoice_id, invoices }
+  State {
+    total_liquidity: total,
+    reserved,
+    last_invoice_id,
+    invoices,
+    last_offramp_id: 0,
+    offramps: [],
+  }
+}
+
+pub fn state_with_offramps(
+  total: Int,
+  reserved: Int,
+  last_invoice_id: Int,
+  invoices: List<Invoice>,
+  last_offramp_id: Int,
+  offramps: List<Offramp>,
+) -> State {
+  State {
+    total_liquidity: total,
+    reserved,
+    last_invoice_id,
+    invoices,
+    last_offramp_id,
+    offramps,
+  }
+}
+
+pub fn make_offramp(
+  id: Int,
+  amount: Int,
+  payment_hash: ByteArray,
+  refund_address: VerificationKeyHash,
+  expires_at: Int,
+) -> Offramp {
+  Offramp { offramp_id: id, amount, payment_hash, refund_address, expires_at }
 }
 
 pub fn make_invoice(

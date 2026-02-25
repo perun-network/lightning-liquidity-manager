@@ -14,6 +14,8 @@ pub type State {
   reserved: Int,
   last_invoice_id: Int,
   invoices: List<Invoice>,
+  last_offramp_id: Int,
+  offramps: List<Offramp>,
 }
 
 /// Invoice/Payload structure for Lightning → Cardano coordination
@@ -27,6 +29,15 @@ pub type Invoice {
   // POSIX ms when created
   timestamp: Int,
   // POSIX ms when it expires
+  expires_at: Int,
+}
+
+/// Offramp structure for cBTC → Lightning BTC coordination
+pub type Offramp {
+  offramp_id: Int,
+  amount: Int,
+  payment_hash: ByteArray,
+  refund_address: VerificationKeyHash,
   expires_at: Int,
 }
 
@@ -51,4 +62,18 @@ pub type Action {
 
   // Cancel pending invoice if payment expires.
   CancelInvoice { invoice_id: Int }
+
+  // Register offramp intent (no cBTC movement)
+  CreateOfframp {
+    amount: Int,
+    payment_hash: ByteArray,
+    refund_address: VerificationKeyHash,
+    expires_at: Int,
+  }
+
+  // Complete offramp: deposit cBTC to pool, remove offramp entry
+  FulfillOfframp { offramp: Offramp }
+
+  // Cancel offramp: remove entry (for timeout/failure recovery)
+  CancelOfframp { offramp_id: Int }
 }

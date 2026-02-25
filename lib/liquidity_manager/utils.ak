@@ -4,7 +4,7 @@ use aiken/interval
 use cardano/address.{Address, Credential}
 use cardano/assets.{Value, quantity_of}
 use cardano/transaction.{Datum, InlineDatum, Input, Output, Transaction}
-use liquidity_manager/types.{Config, Invoice, State}
+use liquidity_manager/types.{Config, Invoice, Offramp, State}
 
 pub fn cbtc_of(value: Value, config: Config) -> Int {
   quantity_of(value, config.cbtc_policy, config.cbtc_name)
@@ -28,6 +28,14 @@ pub fn find_invoice(invoices: List<Invoice>, id: Int) -> Option<Invoice> {
 
 pub fn remove_invoice(invoices: List<Invoice>, id: Int) -> List<Invoice> {
   list.filter(invoices, fn(i) { i.invoice_id != id })
+}
+
+pub fn find_offramp(offramps: List<Offramp>, id: Int) -> Option<Offramp> {
+  list.find(offramps, fn(o) { o.offramp_id == id })
+}
+
+pub fn remove_offramp(offramps: List<Offramp>, id: Int) -> List<Offramp> {
+  list.filter(offramps, fn(o) { o.offramp_id != id })
 }
 
 pub fn submitted_after_expiry(expires_at: Int, tx: Transaction) -> Bool {

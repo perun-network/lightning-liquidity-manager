@@ -34,6 +34,8 @@ class State(PlutusData):
     reserved: int
     last_invoice_id: int
     invoices: IndefiniteList
+    last_offramp_id: int
+    offramps: IndefiniteList
 
 
 @dataclass
@@ -186,6 +188,8 @@ def init_contract(initial_cbtc: int = 10_000_000) -> int:
             reserved=0,
             last_invoice_id=0,
             invoices=IndefiniteList([]),
+            last_offramp_id=0,
+            offramps=IndefiniteList([]),
         )
 
         # Create value with cBTC tokens
