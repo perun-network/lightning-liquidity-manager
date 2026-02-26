@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy validators to preview testnet"""
+"""Deploy validators to Cardano testnet (preview, preprod, or local)"""
 
 import json
 import os
@@ -20,11 +20,25 @@ from pycardano.hash import ScriptHash
 
 
 class Config:
-    """Configuration management for preview testnet deployment"""
+    """Configuration management for testnet deployment"""
 
     # Network configuration
-    NETWORK = os.getenv("CARDANO_NETWORK", "preview")  # preview | local
+    NETWORK = os.getenv("CARDANO_NETWORK", "preview")  # preview | preprod | local
     BLOCKFROST_API = "https://cardano-preview.blockfrost.io/api/"
+
+    # Explorer base URLs per network
+    EXPLORER_URLS = {
+        "preview": "https://preview.cardanoscan.io",
+        "preprod": "https://preprod.cardanoscan.io",
+    }
+
+    @classmethod
+    def get_explorer_url(cls, tx_hash: str) -> str:
+        """Get explorer URL for a transaction hash based on current network"""
+        base = cls.EXPLORER_URLS.get(cls.NETWORK, "")
+        if not base:
+            return f"(no explorer for {cls.NETWORK} network)"
+        return f"{base}/transaction/{tx_hash}"
 
     # Directory paths
     CREDENTIALS_DIR = Path(__file__).parent.parent / "credentials"
@@ -218,7 +232,7 @@ def check_operator_balance(
         if not utxos:
             print(f"⚠ Operator has no UTxOs!")
             print(f"  Please send ADA to: {operator_addr}")
-            print(f"  Faucet: https://faucet.preview.world.dev.cardano.org/basic-faucet")
+            print(f"  Faucet: https://docs.cardano.org/cardano-testnets/tools/faucet/")
             return False
 
         total_lovelace = 0
@@ -234,7 +248,7 @@ def check_operator_balance(
         print(f"⚠ Could not check balance: {e}")
         print(f"  This is normal if the address has not been funded yet")
         print(f"  Please send ADA to: {operator_addr}")
-        print(f"  Faucet: https://faucet.preview.world.dev.cardano.org/basic-faucet")
+        print(f"  Faucet: https://docs.cardano.org/cardano-testnets/tools/faucet/")
         return False
 
 
@@ -289,7 +303,7 @@ def deploy():
         else:
             print("\n⚠ Funding required:")
             print(f"  Send ADA to: {operator_addr}")
-            print(f"  Faucet: https://faucet.preview.world.dev.cardano.org/basic-faucet")
+            print(f"  Faucet: https://docs.cardano.org/cardano-testnets/tools/faucet/")
             print("  Then run this script again")
 
         return 0

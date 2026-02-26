@@ -167,7 +167,7 @@ def mint_tokens(
         print(f"  Asset Name: {token_name}")
         print(f"  Amount: {amount}")
         print(
-            f"\n  Check: https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"\n  Check: {Config.get_explorer_url(str(tx_hash))}")
 
         # Update config with token info
         config_data['token']['cbtc_policy'] = str(policy_id)

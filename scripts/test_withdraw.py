@@ -35,6 +35,8 @@ class State(PlutusData):
     reserved: int
     last_invoice_id: int
     invoices: IndefiniteList
+    last_offramp_id: int
+    offramps: IndefiniteList
 
 
 @dataclass
@@ -101,8 +103,8 @@ def save_transaction_log(tx_type: str, tx_hash: str, amount: int, new_liquidity:
         "tx_hash": str(tx_hash),
         "amount": amount,
         "new_liquidity": new_liquidity,
-        "network": "preview",
-        "explorer_url": f"https://preview.cardanoscan.io/transaction/{tx_hash}"
+        "network": Config.NETWORK,
+        "explorer_url": Config.get_explorer_url(str(tx_hash)),
     }
 
     if tx_type == "withdraw":
@@ -206,6 +208,8 @@ def test_withdraw(contract_tx_id: str, withdraw_amount: int):
             reserved=current_state.reserved,
             last_invoice_id=current_state.last_invoice_id,
             invoices=current_state.invoices,
+            last_offramp_id=current_state.last_offramp_id,
+            offramps=current_state.offramps,
         )
 
         new_cbtc_amount = current_cbtc - withdraw_amount
@@ -267,7 +271,7 @@ def test_withdraw(contract_tx_id: str, withdraw_amount: int):
         print(f"Withdrawn:     {withdraw_amount:,} cBTC")
         print(f"New Liquidity: {new_state.total_liquidity:,} cBTC")
         print(
-            f"Explorer:      https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"Explorer:      {Config.get_explorer_url(str(tx_hash))}")
         print(f"\n⏳ Wait 30-60 seconds, then run:")
         print(
             f"   uv run scripts/test_deposit_parameterized.py {tx_hash} {withdraw_amount}")

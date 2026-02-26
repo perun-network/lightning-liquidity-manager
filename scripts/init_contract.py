@@ -228,7 +228,7 @@ def init_contract(initial_cbtc: int = 10_000_000) -> int:
         print(f"Script Address:    {script_address}")
         print(f"Initial Liquidity: {initial_cbtc:,} cBTC")
         print(
-            f"Explorer:          https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"Explorer:          {Config.get_explorer_url(str(tx_hash))}")
         print(f"\n⏳ Wait 30-60 seconds, then test:")
         print(f"   uv run scripts/test_deposit.py {tx_hash} 100000")
         print(f"=" * 70)

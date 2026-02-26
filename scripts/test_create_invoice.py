@@ -47,6 +47,8 @@ class State(PlutusData):
     reserved: int
     last_invoice_id: int
     invoices: IndefiniteList
+    last_offramp_id: int
+    offramps: IndefiniteList
 
 
 @dataclass
@@ -120,8 +122,8 @@ def save_invoice_log(invoice_id: int, amount: int, owner: str, timestamp: int, e
         "expires_at": expires_at,
         "status": status,
         "tx_hash": str(tx_hash),
-        "network": "preview",
-        "explorer_url": f"https://preview.cardanoscan.io/transaction/{tx_hash}"
+        "network": Config.NETWORK,
+        "explorer_url": Config.get_explorer_url(str(tx_hash)),
     }
 
     log["invoices"].append(invoice_entry)
@@ -255,6 +257,8 @@ def test_create_invoice(contract_tx_id: str, amount: int, owner_address: str, ex
             reserved=current_state.reserved + amount,
             last_invoice_id=new_invoice_id,
             invoices=new_invoices,
+            last_offramp_id=current_state.last_offramp_id,
+            offramps=current_state.offramps,
         )
 
         print(f"  New Reserved:     {new_state.reserved:,} (+{amount:,})")
@@ -329,7 +333,7 @@ def test_create_invoice(contract_tx_id: str, amount: int, owner_address: str, ex
         print(f"Reserved:       {new_state.reserved:,} cBTC")
         print(f"Expires:        {expiry_minutes} minutes from now")
         print(
-            f"Explorer:       https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"Explorer:       {Config.get_explorer_url(str(tx_hash))}")
         print(f"\n⏳ Wait 30-60 seconds, then run:")
         print(
             f"   uv run scripts/test_fulfill_invoice.py {tx_hash} {new_invoice_id}")
