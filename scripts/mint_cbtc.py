@@ -11,7 +11,7 @@ from pycardano import (
     Asset,
     AssetName,
     AuxiliaryData,
-    BlockFrostChainContext,
+
     InvalidHereAfter,
     Metadata,
     MultiAsset,
@@ -67,10 +67,7 @@ def mint_tokens(
         sk_file = config_data['operator']['sk_file']
 
         # Connect to chain
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
+        context = Config.get_chain_context()
 
         # Load payment signing key
         payment_skey = PaymentSigningKey.load(sk_file)
@@ -170,7 +167,7 @@ def mint_tokens(
         print(f"  Asset Name: {token_name}")
         print(f"  Amount: {amount}")
         print(
-            f"\n  Check: https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"\n  Check: {Config.get_explorer_url(str(tx_hash))}")
 
         # Update config with token info
         config_data['token']['cbtc_policy'] = str(policy_id)

@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
     Network,
     PaymentSigningKey,
     PaymentVerificationKey,
@@ -47,6 +46,8 @@ class State(PlutusData):
     reserved: int
     last_invoice_id: int
     invoices: IndefiniteList
+    last_offramp_id: int
+    offramps: IndefiniteList
 
 
 @dataclass
@@ -114,7 +115,7 @@ def update_invoice_log(invoice_id: int, tx_hash: str, status: str):
         if invoice["invoice_id"] == invoice_id:
             invoice["status"] = status
             invoice[f"{status}_tx_hash"] = str(tx_hash)
-            invoice[f"{status}_explorer_url"] = f"https://preview.cardanoscan.io/transaction/{tx_hash}"
+            invoice[f"{status}_explorer_url"] = Config.get_explorer_url(str(tx_hash))
             break
 
     with open(log_file, 'w') as f:
@@ -154,10 +155,7 @@ def test_fulfill_invoice(contract_tx_id: str, invoice_id: int):
         print(f"  Contract TX:     {contract_tx_id[:32]}...")
 
         # Connect to chain
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
+        context = Config.get_chain_context()
 
         # Load keys and validator
         signing_key = PaymentSigningKey.load(sk_file)
@@ -261,6 +259,8 @@ def test_fulfill_invoice(contract_tx_id: str, invoice_id: int):
             reserved=current_state.reserved - target_invoice.amount,
             last_invoice_id=current_state.last_invoice_id,
             invoices=new_invoices,
+            last_offramp_id=current_state.last_offramp_id,
+            offramps=current_state.offramps,
         )
 
         print(
@@ -355,7 +355,7 @@ def test_fulfill_invoice(contract_tx_id: str, invoice_id: int):
         print(f"Sent to:        {owner_address}")
         print(f"New Liquidity:  {new_state.total_liquidity:,} cBTC")
         print(
-            f"Explorer:       https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"Explorer:       {Config.get_explorer_url(str(tx_hash))}")
         print(f"\n⏳ Wait 30-60 seconds for confirmation")
         print("=" * 70)
 

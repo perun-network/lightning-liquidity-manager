@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
+
     Network,
     PaymentSigningKey,
     PlutusData,
@@ -34,6 +34,8 @@ class State(PlutusData):
     reserved: int
     last_invoice_id: int
     invoices: IndefiniteList
+    last_offramp_id: int
+    offramps: IndefiniteList
 
 
 @dataclass
@@ -169,11 +171,8 @@ def init_contract(initial_cbtc: int = 10_000_000) -> int:
         Config.save_deployment_config(config_data)
 
         # Step 3: Connect to chain
-        print(f"\n[3/5] Connecting to testnet...")
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
+        print(f"\n[3/5] Connecting to {Config.NETWORK} network...")
+        context = Config.get_chain_context()
 
         # Load keys
         signing_key = PaymentSigningKey.load(sk_file)
@@ -189,6 +188,8 @@ def init_contract(initial_cbtc: int = 10_000_000) -> int:
             reserved=0,
             last_invoice_id=0,
             invoices=IndefiniteList([]),
+            last_offramp_id=0,
+            offramps=IndefiniteList([]),
         )
 
         # Create value with cBTC tokens
@@ -227,7 +228,7 @@ def init_contract(initial_cbtc: int = 10_000_000) -> int:
         print(f"Script Address:    {script_address}")
         print(f"Initial Liquidity: {initial_cbtc:,} cBTC")
         print(
-            f"Explorer:          https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"Explorer:          {Config.get_explorer_url(str(tx_hash))}")
         print(f"\n⏳ Wait 30-60 seconds, then test:")
         print(f"   uv run scripts/test_deposit.py {tx_hash} 100000")
         print(f"=" * 70)

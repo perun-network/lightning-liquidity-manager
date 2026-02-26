@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy validators to preview testnet"""
+"""Deploy validators to Cardano testnet (preview, preprod, or local)"""
 
 import json
 import os
@@ -11,6 +11,7 @@ from pycardano import (
     Address,
     BlockFrostChainContext,
     Network,
+    OgmiosChainContext,
     PaymentSigningKey,
     PaymentVerificationKey,
     PlutusV3Script,
@@ -19,11 +20,25 @@ from pycardano.hash import ScriptHash
 
 
 class Config:
-    """Configuration management for preview testnet deployment"""
+    """Configuration management for testnet deployment"""
 
     # Network configuration
-    NETWORK = "preview"  # preview testnet (magic 2)
+    NETWORK = os.getenv("CARDANO_NETWORK", "preview")  # preview | preprod | local
     BLOCKFROST_API = "https://cardano-preview.blockfrost.io/api/"
+
+    # Explorer base URLs per network
+    EXPLORER_URLS = {
+        "preview": "https://preview.cardanoscan.io",
+        "preprod": "https://preprod.cardanoscan.io",
+    }
+
+    @classmethod
+    def get_explorer_url(cls, tx_hash: str) -> str:
+        """Get explorer URL for a transaction hash based on current network"""
+        base = cls.EXPLORER_URLS.get(cls.NETWORK, "")
+        if not base:
+            return f"(no explorer for {cls.NETWORK} network)"
+        return f"{base}/transaction/{tx_hash}"
 
     # Directory paths
     CREDENTIALS_DIR = Path(__file__).parent.parent / "credentials"
@@ -60,15 +75,45 @@ class Config:
         return None
 
     @classmethod
+    def get_blockfrost_base_url(cls) -> str:
+        """Get Blockfrost base URL - supports local yaci-devkit or remote"""
+        return os.getenv(
+            "BLOCKFROST_BASE_URL",
+            "https://cardano-preview.blockfrost.io/api/",
+        )
+
+    @classmethod
     def get_blockfrost_api_key(cls) -> str:
-        """Get Blockfrost API key from environment"""
+        """Get Blockfrost API key from environment.
+        For local yaci-devkit, any non-empty string works."""
         api_key = os.getenv("BLOCKFROST_PROJECT_ID")
         if not api_key:
+            # Allow local devnet without a real key
+            if cls.is_local():
+                return "local"
             raise ValueError(
                 "BLOCKFROST_PROJECT_ID environment variable not set. "
                 "Get a free key from https://blockfrost.io"
             )
         return api_key
+
+    @classmethod
+    def is_local(cls) -> bool:
+        """Check if targeting local yaci-devkit"""
+        base_url = cls.get_blockfrost_base_url()
+        return "localhost" in base_url or "127.0.0.1" in base_url
+
+    @classmethod
+    def get_chain_context(cls):
+        """Create a chain context - Ogmios for local devnet, Blockfrost for remote"""
+        if cls.is_local():
+            ogmios_host = os.getenv("OGMIOS_HOST", "localhost")
+            ogmios_port = int(os.getenv("OGMIOS_PORT", "1337"))
+            return OgmiosChainContext(host=ogmios_host, port=ogmios_port)
+        return BlockFrostChainContext(
+            project_id=cls.get_blockfrost_api_key(),
+            base_url=cls.get_blockfrost_base_url(),
+        )
 
 
 def read_validator() -> dict:
@@ -187,7 +232,7 @@ def check_operator_balance(
         if not utxos:
             print(f"⚠ Operator has no UTxOs!")
             print(f"  Please send ADA to: {operator_addr}")
-            print(f"  Faucet: https://faucet.preview.world.dev.cardano.org/basic-faucet")
+            print(f"  Faucet: https://docs.cardano.org/cardano-testnets/tools/faucet/")
             return False
 
         total_lovelace = 0
@@ -203,7 +248,7 @@ def check_operator_balance(
         print(f"⚠ Could not check balance: {e}")
         print(f"  This is normal if the address has not been funded yet")
         print(f"  Please send ADA to: {operator_addr}")
-        print(f"  Faucet: https://faucet.preview.world.dev.cardano.org/basic-faucet")
+        print(f"  Faucet: https://docs.cardano.org/cardano-testnets/tools/faucet/")
         return False
 
 
@@ -231,12 +276,9 @@ def deploy():
         print(f"✓ Deployment config saved to {Config.CONFIG_FILE}")
 
         # 4. Connect to chain
-        print("\n[4/5] Connecting to preview testnet...")
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
-        print(f"✓ Connected to {Config.NETWORK} testnet")
+        print(f"\n[4/5] Connecting to {Config.NETWORK} network...")
+        context = Config.get_chain_context()
+        print(f"✓ Connected to {Config.NETWORK} ({Config.get_blockfrost_base_url()})")
 
         # 5. Check operator balance
         print("\n[5/5] Validating operator setup...")
@@ -261,7 +303,7 @@ def deploy():
         else:
             print("\n⚠ Funding required:")
             print(f"  Send ADA to: {operator_addr}")
-            print(f"  Faucet: https://faucet.preview.world.dev.cardano.org/basic-faucet")
+            print(f"  Faucet: https://docs.cardano.org/cardano-testnets/tools/faucet/")
             print("  Then run this script again")
 
         return 0

@@ -14,7 +14,6 @@ from pathlib import Path
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
 )
 
 from config import Config
@@ -59,6 +58,8 @@ def get_contract_state(context, script_address: str) -> dict:
         reserved: int
         last_invoice_id: int
         invoices: IndefiniteList
+        last_offramp_id: int
+        offramps: IndefiniteList
 
     utxos = context.utxos(script_address)
     if not utxos:
@@ -114,10 +115,7 @@ def run_acceptance_test(starting_tx_id: str):
     print(f"Starting TX:    {starting_tx_id}\n")
 
     # Connect to chain
-    context = BlockFrostChainContext(
-        project_id=Config.get_blockfrost_api_key(),
-        base_url="https://cardano-preview.blockfrost.io/api/",
-    )
+    context = Config.get_chain_context()
 
     # Track all transactions
     results = {
@@ -170,7 +168,7 @@ def run_acceptance_test(starting_tx_id: str):
         print(f"\n✓ Deposit #{i} succeeded")
         print(f"  TX Hash: {tx_hash}")
         print(
-            f"  Explorer: https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"  Explorer: {Config.get_explorer_url(str(tx_hash))}")
 
         current_tx = tx_hash
 
@@ -197,7 +195,7 @@ def run_acceptance_test(starting_tx_id: str):
             "number": i,
             "amount": amount,
             "tx_hash": tx_hash,
-            "explorer_url": f"https://preview.cardanoscan.io/transaction/{tx_hash}",
+            "explorer_url": Config.get_explorer_url(str(tx_hash)),
             "before_liquidity": state_before['total_liquidity'],
             "after_liquidity": state_after['total_liquidity']
         })
@@ -248,7 +246,7 @@ def run_acceptance_test(starting_tx_id: str):
         print(f"\n✓ Withdrawal #{i} succeeded")
         print(f"  TX Hash: {tx_hash}")
         print(
-            f"  Explorer: https://preview.cardanoscan.io/transaction/{tx_hash}")
+            f"  Explorer: {Config.get_explorer_url(str(tx_hash))}")
 
         current_tx = tx_hash
 
@@ -275,7 +273,7 @@ def run_acceptance_test(starting_tx_id: str):
             "number": i,
             "amount": amount,
             "tx_hash": tx_hash,
-            "explorer_url": f"https://preview.cardanoscan.io/transaction/{tx_hash}",
+            "explorer_url": Config.get_explorer_url(str(tx_hash)),
             "before_liquidity": state_before['total_liquidity'],
             "after_liquidity": state_after['total_liquidity']
         })

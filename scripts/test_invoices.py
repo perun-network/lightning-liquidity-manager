@@ -23,7 +23,6 @@ from pathlib import Path
 
 from pycardano import (
     Address,
-    BlockFrostChainContext,
     Network,
     PaymentSigningKey,
     PaymentVerificationKey,
@@ -80,6 +79,8 @@ def get_contract_state(context, script_address: str) -> tuple:
         reserved: int
         last_invoice_id: int
         invoices: IndefiniteList
+        last_offramp_id: int
+        offramps: IndefiniteList
 
     state = State.from_cbor(latest_utxo.output.datum.cbor)
 
@@ -157,10 +158,7 @@ def test_invoice_operations(starting_contract_tx: str, test_amount: int = 200000
         print(f"  Test Amount:     {test_amount:,} cBTC")
 
         # Connect to chain
-        context = BlockFrostChainContext(
-            project_id=Config.get_blockfrost_api_key(),
-            base_url="https://cardano-preview.blockfrost.io/api/",
-        )
+        context = Config.get_chain_context()
 
         current_tx = starting_contract_tx
 
@@ -366,7 +364,7 @@ def test_invoice_operations(starting_contract_tx: str, test_amount: int = 200000
         print(f"\n[Next Steps]")
         print(f"  - Check invoices.json for complete log")
         print(
-            f"  - View on explorer: https://preview.cardanoscan.io/transaction/{current_tx}")
+            f"  - View on explorer: {Config.get_explorer_url(str(current_tx))}")
         print(
             f"  - Continue testing with: uv run scripts/test_deposit.py {current_tx} <amount>")
 

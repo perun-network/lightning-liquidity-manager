@@ -1,11 +1,12 @@
 use cardano/transaction.{OutputReference, Transaction}
 use liquidity_manager/types.{
-  Action, CancelInvoice, Config, CreateInvoice, Deposit, FulfillInvoice, State,
-  Withdraw,
+  Action, CancelInvoice, CancelOfframp, Config, CreateInvoice, CreateOfframp,
+  Deposit, FulfillInvoice, FulfillOfframp, State, Withdraw,
 }
 use liquidity_manager/validation.{
-  validate_cancel_invoice, validate_create_invoice, validate_deposit,
-  validate_fulfill_invoice, validate_withdraw,
+  validate_cancel_invoice, validate_cancel_offramp, validate_create_invoice,
+  validate_create_offramp, validate_deposit, validate_fulfill_invoice,
+  validate_fulfill_offramp, validate_withdraw,
 }
 
 use aiken/interval.{between, entirely_after}
@@ -43,6 +44,20 @@ validator liquidity_manager(config: Config) {
         validate_fulfill_invoice(config, state, invoice, self)
       CancelInvoice { invoice_id } ->
         validate_cancel_invoice(config, state, invoice_id, self)
+      CreateOfframp { amount, payment_hash, refund_address, expires_at } ->
+        validate_create_offramp(
+          config,
+          state,
+          amount,
+          payment_hash,
+          refund_address,
+          expires_at,
+          self,
+        )
+      FulfillOfframp { offramp } ->
+        validate_fulfill_offramp(config, state, offramp, self)
+      CancelOfframp { offramp_id } ->
+        validate_cancel_offramp(config, state, offramp_id, self)
     }
   }
 
