@@ -13,5 +13,5 @@ jobs:
       - uses: aiken-lang/setup-aiken@v1
         with:
           version: v1.1.19
-      - run: aiken check -D
+      - run: aiken check
       - run: aiken build
