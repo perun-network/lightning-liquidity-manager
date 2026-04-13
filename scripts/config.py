@@ -69,10 +69,13 @@ class Config:
     @classmethod
     def load_deployment_config(cls) -> Optional[dict]:
         """Load deployment configuration from file"""
-        if cls.CONFIG_FILE.exists():
+        if not cls.CONFIG_FILE.exists():
+            return None
+        try:
             with open(cls.CONFIG_FILE, 'r') as f:
                 return json.load(f)
-        return None
+        except json.JSONDecodeError as e:
+            raise SystemExit(f"ERROR: {cls.CONFIG_FILE} is corrupted: {e}")
 
     @classmethod
     def get_blockfrost_base_url(cls) -> str:
@@ -118,24 +121,38 @@ class Config:
 
 def read_validator() -> dict:
     """Load Plutus v3 script from plutus.json"""
-    with open(Config.PLUTUS_FILE, "r") as f:
-        validator = json.load(f)
+    try:
+        with open(Config.PLUTUS_FILE, "r") as f:
+            validator = json.load(f)
+    except FileNotFoundError:
+        raise SystemExit(f"ERROR: {Config.PLUTUS_FILE} not found. Run 'aiken build' first.")
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"ERROR: {Config.PLUTUS_FILE} is not valid JSON: {e}")
 
     # Get the spend validator (liquidity_manager.spend)
     spend_validator = None
-    for v in validator["validators"]:
+    for v in validator.get("validators", []):
         if "spend" in v.get("title", ""):
             spend_validator = v
             break
 
     if not spend_validator:
-        raise ValueError("Could not find spend validator in plutus.json")
+        raise SystemExit("ERROR: could not find spend validator in plutus.json")
 
     # Create PlutusV3Script from compiled code
-    script_bytes = PlutusV3Script(
-        bytes.fromhex(spend_validator["compiledCode"])
-    )
-    script_hash = ScriptHash(bytes.fromhex(spend_validator["hash"]))
+    compiled_code = spend_validator.get("compiledCode", "")
+    if not compiled_code:
+        raise SystemExit("ERROR: empty compiledCode in plutus.json")
+    try:
+        script_bytes = PlutusV3Script(bytes.fromhex(compiled_code))
+    except ValueError as e:
+        raise SystemExit(f"ERROR: invalid hex in compiledCode: {e}")
+
+    hash_hex = spend_validator.get("hash", "")
+    try:
+        script_hash = ScriptHash(bytes.fromhex(hash_hex))
+    except ValueError as e:
+        raise SystemExit(f"ERROR: invalid hex in script hash: {e}")
 
     print(f"✓ Loaded Plutus v3 script")
     print(f"  Script Hash: {spend_validator['hash']}")

@@ -51,21 +51,37 @@ def read_parameterized_validator() -> dict:
     """Load parameterized validator from plutus-applied.json"""
     applied_file = str(Path(__file__).resolve().parent.parent / "plutus-applied.json")
 
-    with open(applied_file, "r") as f:
-        validator = json.load(f)
+    try:
+        with open(applied_file, "r") as f:
+            validator = json.load(f)
+    except FileNotFoundError:
+        raise SystemExit(f"ERROR: {applied_file} not found. Run init_contract.py first.")
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"ERROR: {applied_file} is not valid JSON: {e}")
 
     spend_validator = None
-    for v in validator["validators"]:
+    for v in validator.get("validators", []):
         if "spend" in v.get("title", ""):
             spend_validator = v
             break
 
     if not spend_validator:
-        raise ValueError("Spend validator not found in plutus-applied.json")
+        raise SystemExit("ERROR: spend validator not found in plutus-applied.json")
 
-    script_hex = spend_validator["compiledCode"]
-    script = PlutusV3Script(bytes.fromhex(script_hex))
-    script_hash = ScriptHash(bytes.fromhex(spend_validator["hash"]))
+    script_hex = spend_validator.get("compiledCode", "")
+    if not script_hex or len(script_hex) % 2 != 0:
+        raise SystemExit(f"ERROR: invalid compiledCode in plutus-applied.json (length: {len(script_hex)})")
+
+    try:
+        script = PlutusV3Script(bytes.fromhex(script_hex))
+    except ValueError as e:
+        raise SystemExit(f"ERROR: invalid hex in compiledCode: {e}")
+
+    hash_hex = spend_validator.get("hash", "")
+    try:
+        script_hash = ScriptHash(bytes.fromhex(hash_hex))
+    except ValueError as e:
+        raise SystemExit(f"ERROR: invalid hex in script hash: {e}")
 
     return {
         "script": script,
