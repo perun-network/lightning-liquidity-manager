@@ -4,6 +4,7 @@
 import json
 import sys
 import subprocess
+from pathlib import Path
 from dataclasses import dataclass
 
 from pycardano import (
@@ -74,7 +75,7 @@ def apply_validator_parameters(config_data: dict) -> str:
     print(f"  Config CBOR length: {len(cbor_hex)} chars")
     print(f"  Config CBOR (hex): {cbor_hex}")
 
-    output_file = "plutus-applied.json"
+    output_file = str(Path(__file__).resolve().parent.parent / "plutus-applied.json")
     input_file = str(Config.PLUTUS_FILE)
 
     # Run aiken blueprint apply
