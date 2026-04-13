@@ -1,3 +1,4 @@
+from pathlib import Path
 #!/usr/bin/env python3
 """Test create invoice transaction - parameterized validator version"""
 
@@ -63,7 +64,7 @@ class CreateInvoiceRedeemer(PlutusData):
 
 def read_parameterized_validator() -> dict:
     """Load parameterized validator from plutus-applied.json"""
-    applied_file = "plutus-applied.json"
+    applied_file = str(Path(__file__).resolve().parent.parent / "plutus-applied.json")
 
     with open(applied_file, "r") as f:
         validator = json.load(f)
